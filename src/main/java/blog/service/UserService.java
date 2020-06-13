@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class UserService implements UserDetailsService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private Map<String, String> userPasswords = new ConcurrentHashMap<>();
+    private Map<String, User> users = new ConcurrentHashMap<>();
 
     @Inject
     public UserService(BCryptPasswordEncoder bCryptPasswordEncoder) {
@@ -23,26 +23,28 @@ public class UserService implements UserDetailsService {
         save("zhangsan", "zhangsan");
     }
 
+    // 一定要对密码加密后再存储
     public void save(String username, String password) {
-        userPasswords.put(username, bCryptPasswordEncoder.encode(password)); // 一定要对密码进行加密存储
+        users.put(username, new User(1, username, bCryptPasswordEncoder.encode(password)));
     }
 
-    public String getPassword(String userName) {
-        return userPasswords.get(userName);
-    }
+//    public User getUserById(Integer id) {
+//        return null;
+//    }
 
-    public User getUserById(Integer id) {
-        return null;
+    public User getUserByUsername(String username) {
+        return users.get(username);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (!userPasswords.containsKey(username)) {
+        if (!users.containsKey(username)) {
             throw new UsernameNotFoundException(username + " 不存在！");
         }
 
-        String encodedPassword = userPasswords.get(username);
+        User user = users.get(username);
 
-        return new org.springframework.security.core.userdetails.User(username, encodedPassword, Collections.emptyList());
+        return new org.springframework.security.core.userdetails.User(
+                username, user.getEncryptedPassword(), Collections.emptyList());
     }
 }

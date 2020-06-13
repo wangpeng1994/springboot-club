@@ -14,6 +14,6 @@ public class OrderService {
     }
 
     public void placeOrder(Integer userId, String item) {
-        userService.getUserById(userId);
+//        userService.getUserById(userId);
     }
 }
