@@ -1,8 +1,7 @@
-package hello;
+package blog.controller;
 
-import hello.service.OrderService;
-import hello.service.User;
-import hello.service.UserService;
+import blog.entity.User;
+import blog.service.UserService;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
