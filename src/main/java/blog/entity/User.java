@@ -1,10 +1,13 @@
 package blog.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.Instant;
 
 public class User {
     private Integer id;
     private String username;
+    @JsonIgnore // 序列化时忽略 encryptedPassword，从而不会返回给前台
     private String encryptedPassword;
     private String avatar;
     private Instant createdAt;
