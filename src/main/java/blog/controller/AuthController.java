@@ -7,6 +7,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -65,16 +66,15 @@ public class AuthController {
     public Object auth() {
         // 如果没登录，或鉴权不通过，拿到的 username 是 "anonymousUser"
         // 若通过了鉴权，则能拿到当前的 username
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User loggedInUser = userService.getUserByUsername(username);
+        User loggedInUser = userService.getUserByUsername(authentication == null ? null : authentication.getName());
 
         if (loggedInUser == null) {
             return new Result("ok", "用户没有登录", false);
         }
         return new Result("ok", null, true, loggedInUser);
     }
-
 
 
     @PostMapping("/auth/login")
