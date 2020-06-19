@@ -50,7 +50,7 @@ class AuthControllerTest {
 
     /**
      * 在 JVM 某个地方，测试框架自动创建了测试实例，每个 @Test 测试条目所在的实例都是独立的
-     * 同理 @BeforeEach 中的 each，也暗示了是每一个 @Test 测试用例之前的做的事情
+     * 同理 @BeforeEach 中的 each，也暗示了是每一个 @Test 测试用例之前都要做的事情
      */
 
     @Test
