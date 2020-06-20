@@ -1,23 +1,25 @@
 package blog.entity;
 
-public class Result {
+/**
+ * Result 基类
+ * @param <T>
+ */
+public class Result<T> {
     private String status;
     private String msg;
-    private Boolean isLogin;
-    private Object data;
+    private T data;
 
-    public static Result failure(String message) {
-        return new Result("fail", message, false);
+    public static Result<Object> failure(String message) {
+        return new Result<>("fail", message);
     }
 
-    public Result(String status, String msg, Boolean isLogin) {
-        this(status, msg, isLogin, null);
+    protected Result(String status, String msg) {
+        this(status, msg, null);
     }
 
-    public Result(String status, String msg, Boolean isLogin, User data) {
+    protected Result(String status, String msg, T data) {
         this.status = status;
         this.msg = msg;
-        this.isLogin = isLogin;
         this.data = data;
     }
 
@@ -27,10 +29,6 @@ public class Result {
 
     public String getMsg() {
         return msg;
-    }
-
-    public Boolean isIsLogin() {
-        return isLogin;
     }
 
     public Object getData() {

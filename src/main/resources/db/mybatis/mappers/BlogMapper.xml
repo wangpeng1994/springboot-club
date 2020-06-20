@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BlogMapper">
+    <select id="selectBlog" resultMap="blogItem">
+        select
+        b.id as blog_id,
+        b.title as title,
+        b.description as description,
+        b.content as content,
+        b.created_at as blog_created_at,
+        b.updated_at as blog_updated_at,
+        u.id as user_id,
+        u.username as username,
+        u.avatar as avatar,
+        u.created_at as user_created_at,
+        u.created_at as user_updated_at
+        from blog b
+        left join user u on b.user_id = u.id
+        <if test="user_id != null">
+            where user_id = #{user_id}
+        </if>
+        limit #{offset}, #{limit}
+    </select>
+    <resultMap id="blogItem" type="Blog">
+        <result property="id" column="blog_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="blog_created_at"/>
+        <result property="updatedAt" column="blog_updated_at"/>
+        <association property="user" javaType="User">
+            <result property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="avatar" column="avatar"/>
+            <result property="createdAt" column="user_created_at"/>
+            <result property="updatedAt" column="user_updated_at"/>
+        </association>
+    </resultMap>
+
+    <select id="countBlog" resultType="int">
+        select count(*) from blog
+        <if test="user_id != null">
+            where user_id = #{user_id}
+        </if>
+    </select>
+</mapper>

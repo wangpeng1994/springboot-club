@@ -1,5 +1,6 @@
 package blog.controller;
 
+import blog.entity.LoginResult;
 import blog.entity.Result;
 import blog.entity.User;
 import blog.service.UserService;
@@ -57,13 +58,12 @@ public class AuthController {
                 userDetails.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(token);
-
-        return new Result("ok", "注册成功", false, userService.getUserByUsername(username));
+        return LoginResult.success("注册成功", false, userService.getUserByUsername(username));
     }
 
     @GetMapping("/auth")
     @ResponseBody
-    public Object auth() {
+    public Result auth() {
         // 如果没登录，或鉴权不通过，拿到的 username 是 "anonymousUser"
         // 若通过了鉴权，则能拿到当前的 username
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -71,9 +71,9 @@ public class AuthController {
         User loggedInUser = userService.getUserByUsername(authentication == null ? null : authentication.getName());
 
         if (loggedInUser == null) {
-            return new Result("ok", "用户没有登录", false);
+            return LoginResult.success("用户没有登录", false);
         }
-        return new Result("ok", null, true, loggedInUser);
+        return LoginResult.success(null, true, loggedInUser);
     }
 
 
@@ -103,7 +103,7 @@ public class AuthController {
             authenticationManager.authenticate(token);
             // 鉴权成功后，更新当前用户的认证信息，保存在一个地方（内存中），会设置 set-cookie
             SecurityContextHolder.getContext().setAuthentication(token);
-            return new Result("ok", "登录成功", true, userService.getUserByUsername(username));
+            return LoginResult.success("登录成功", true, userService.getUserByUsername(username));
         } catch (BadCredentialsException e) {
             // 密码错误，鉴权失败
             return Result.failure("密码不正确");
@@ -120,6 +120,6 @@ public class AuthController {
             return Result.failure("用户尚未登录");
         }
         SecurityContextHolder.clearContext();
-        return new Result("ok", "注销成功", false);
+        return LoginResult.success("注销成功", false);
     }
 }

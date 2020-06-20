@@ -14,4 +14,7 @@ public interface UserMapper {
     @Insert("insert into user (username, encrypted_password, created_at, updated_at) " +
             "values (#{username}, #{encryptedPassword}, now(), now())") // TODO 其实有点问题
     void insertUser(@Param("username") String username, @Param("encryptedPassword") String encryptedPassword);
+
+    @Select("select * from user where id = #{userId}")
+    User getUserById(Integer userId);
 }
