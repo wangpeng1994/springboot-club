@@ -1,3 +1,5 @@
+// env 是 jenkins 提供的环境变量
+
 String buildNumber = env.BUILD_NUMBER;
 String timestamp = new Date().format('yyyyMMddHHmmss');
 String projectName = env.JOB_NAME.split(/\//)[0];
@@ -11,11 +13,12 @@ String version = "${buildNumber}-${timestamp}-${projectName}";
 node {
     checkout scm;
 
+    // 检查构建参数是回滚还是正常构建
     if(params.BuildType=='Rollback') {
         return rollback()
     } else if(params.BuildType=='Normal'){
         return normalCIBuild(version)
-    } else if(branchName == 'master'){
+    } else if(branchName == 'master'){ // 第一次构建时的初始设置
         setScmPollStrategyAndBuildTypes(['Normal', 'Rollback']);
     }
 }
@@ -33,7 +36,7 @@ def normalCIBuild(String version) {
 
     stage('deploy')
 
-    input 'deploy?'
+    input 'deploy?' // 询问用户是否确认进行部署
 
     deployVersion(version)
 }
@@ -42,10 +45,11 @@ def deployVersion(String version) {
     sh "ssh root@104.194.87.72 'docker rm -f my-blog && docker run --name my-blog -d -p 8080:8080 104.194.87.72:5000/blog-springboot:${version}'"
 }
 
+// 设置源代码管理系统轮询策略和构建类型
 def setScmPollStrategyAndBuildTypes(List buildTypes) {
     def propertiesArray = [
             parameters([choice(choices: buildTypes.join('\n'), description: '', name: 'BuildType')]),
-            pipelineTriggers([[$class: "SCMTrigger", scmpoll_spec: "* * * * *"]])
+            pipelineTriggers([[$class: "SCMTrigger", scmpoll_spec: "* * * * *"]]) // cron 表达式，表示每分钟检查一次git仓库以进行构建
     ];
     properties(propertiesArray);
 }
