@@ -30,9 +30,9 @@ def normalCIBuild(String version) {
 
     stage('docker build')
 
-    sh("docker build . -t 104.194.87.72:5000/blog-springboot:${version}")
+    sh("docker build . -t 192.168.31.83:5000/blog-springboot:${version}")
 
-    sh("docker push 104.194.87.72:5000/blog-springboot:${version}")
+    sh("docker push 192.168.31.83:5000/blog-springboot:${version}")
 
     stage('deploy')
 
@@ -42,7 +42,7 @@ def normalCIBuild(String version) {
 }
 
 def deployVersion(String version) {
-    sh "ssh root@104.194.87.72 'docker rm -f my-blog && docker run --name my-blog -d -p 8080:8080 104.194.87.72:5000/blog-springboot:${version}'"
+    sh "ssh root@192.168.31.83 'docker rm -f my-blog && docker run --name my-blog -d -p 8080:8080 192.168.31.83:5000/blog-springboot:${version}'"
 }
 
 // 设置源代码管理系统轮询策略和构建类型
@@ -55,7 +55,7 @@ def setScmPollStrategyAndBuildTypes(List buildTypes) {
 }
 
 def rollback() {
-    def dockerRegistryHost = "http://104.194.87.72:5000";
+    def dockerRegistryHost = "http://192.168.31.83:5000";
     def getAllTagsUri = "/v2/blog-springboot/tags/list";
 
     def responseJson = new URL("${dockerRegistryHost}${getAllTagsUri}")
